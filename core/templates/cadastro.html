@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#cd3268">
+    <title>Criar conta - BORA!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+
+<body>
+    <div class="app-shell">
+        <div class="status-bar"></div>
+
+        <header class="top-header">
+            <a href="/" class="back-btn" aria-label="Voltar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+            </a>
+            <h1 class="header-title">Criar conta</h1>
+        </header>
+
+        {% load static %}<main class="main-content">
+            <div class="brand-block">
+                <div class="brand-logo">
+                    <img src="{% static 'imagens/bora_svg.svg' %}" alt="Logo BORA!">
+                </div>
+                <h1>Junte-se ao BORA!</h1>
+                <p>Crie sua conta e participe da comunidade</p>
+            </div>
+
+            <div class="form-card">
+                <div class="perks">
+                    <div class="perk">
+                        <div class="perk-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M12 5v14" />
+                                <path d="M5 12h14" />
+                            </svg>
+                        </div>
+                        Crie e organize seus próprios eventos
+                    </div>
+                    <div class="perk">
+                        <div class="perk-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        Encontre colegas com os mesmos interesses
+                    </div>
+                    <div class="perk">
+                        <div class="perk-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        </div>
+                        Acesso gratuito a todos os recursos
+                    </div>
+                </div>
+
+                {% if erro %}
+                <div class="error-alert">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    {{ erro }}
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="username" class="form-label">
+                            Nome de usuário <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="8" r="5" />
+                                    <path d="M20 21a8 8 0 1 0-16 0" />
+                                </svg>
+                            </span>
+                            <input type="text" id="username" name="username" class="form-input"
+                                placeholder="seu_usuario" autocomplete="username" required>
+                        </div>
+                        <p class="form-hint">Apenas letras, números e underscore.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password1" class="form-label">
+                            Senha <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </span>
+                            <input type="password" id="password1" name="password1" class="form-input"
+                                placeholder="Mínimo 8 caracteres" autocomplete="new-password" minlength="8" required
+                                oninput="atualizarForca(this.value)">
+                        </div>
+                        <div class="password-strength" id="strength-bars">
+                            <div class="strength-bar" id="bar1"></div>
+                            <div class="strength-bar" id="bar2"></div>
+                            <div class="strength-bar" id="bar3"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password2" class="form-label">
+                            Confirmar senha <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </span>
+                            <input type="password" id="password2" name="password2" class="form-input"
+                                placeholder="Repita a senha" autocomplete="new-password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <line x1="19" y1="8" x2="19" y2="14" />
+                            <line x1="22" y1="11" x2="16" y2="11" />
+                        </svg>
+                        Criar conta
+                    </button>
+                </form>
+            </div>
+
+            <p class="footer-link">
+                Já tem uma conta? <a href="/entrar">Entrar</a>
+            </p>
+        </main>
+    </div>
+
+    <script>
+        function atualizarForca(senha) {
+            const bar1 = document.getElementById('bar1');
+            const bar2 = document.getElementById('bar2');
+            const bar3 = document.getElementById('bar3');
+
+            bar1.className = 'strength-bar';
+            bar2.className = 'strength-bar';
+            bar3.className = 'strength-bar';
+
+            if (senha.length === 0) return;
+
+            const temNumero = /\d/.test(senha);
+            const temEspecial = /[^a-zA-Z0-9]/.test(senha);
+            const comprimentoOk = senha.length >= 8;
+
+            const pontos = [comprimentoOk, temNumero, temEspecial].filter(Boolean).length;
+
+            if (pontos === 1) {
+                bar1.classList.add('weak');
+            } else if (pontos === 2) {
+                bar1.classList.add('medium');
+                bar2.classList.add('medium');
+            } else {
+                bar1.classList.add('strong');
+                bar2.classList.add('strong');
+                bar3.classList.add('strong');
+            }
+        }
+    </script>
+</body>
+
+</html>

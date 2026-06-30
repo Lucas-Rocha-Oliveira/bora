@@ -1,0 +1,906 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#7592D2">
+    <title>{{ evento.titulo }} - BORA!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <style>
+        /* ── Event Header ── */
+        .detalhe-header {
+            text-align: center;
+            padding: 32px 16px 24px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        .emoji-grande {
+            width: 80px; height: 80px;
+            margin: 0 auto 16px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem;
+        }
+        .evento-titulo {
+            font-size: 1.5rem; font-weight: 800; line-height: 1.2;
+        }
+        .evento-descricao {
+            color: var(--muted-foreground);
+            margin-top: 8px;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700;
+            margin-top: 14px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .status-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.7;
+        }
+        .status-PLANNING  { background: #fef9c3; color: #854d0e; }
+        .status-WAITING   { background: #ffedd5; color: #c2410c; }
+        .status-ONGOING   { background: #dcfce7; color: #166534; }
+        .status-CLOSED    { background: var(--muted); color: var(--muted-foreground); }
+
+        /* Event meta row */
+        .evento-meta-row {
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 16px;
+            margin-top: 16px;
+            font-size: 0.8125rem; color: var(--muted-foreground);
+        }
+        .evento-meta-row span {
+            display: flex; align-items: center; gap: 5px;
+        }
+        .evento-meta-row svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+        /* ── Section boxes ── */
+        .section-box {
+            background: var(--card);
+            margin: 16px;
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        .section-box-title {
+            font-size: 1rem; font-weight: 700;
+            margin-bottom: 16px;
+            display: flex; align-items: center; gap: 8px;
+            color: var(--foreground);
+        }
+        .section-box-title svg { width: 18px; height: 18px; color: var(--primary); flex-shrink: 0; }
+
+        /* ── Participant list ── */
+        .participant-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .participant-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .participant-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .participant-name { font-size: 0.9375rem; font-weight: 600; }
+        .participant-role {
+            font-size: 0.6875rem; font-weight: 700;
+            color: var(--primary-dark);
+            background: var(--primary-light);
+            padding: 2px 8px; border-radius: 6px;
+            margin-left: 6px;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .participant-right { text-align: right; }
+        .participant-status { font-size: 0.8125rem; font-weight: 500; color: var(--muted-foreground); }
+        .participant-pts { font-size: 0.75rem; color: var(--muted-foreground); margin-top: 2px; }
+
+        /* ── Join / interest actions ── */
+        .join-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .btn-primary {
+            width: 100%; padding: 14px 24px;
+            font-size: 0.9375rem; font-weight: 600;
+            color: white; background: var(--primary);
+            border: none; border-radius: var(--radius);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 14px rgba(117, 146, 210, 0.25);
+            transition: transform 0.15s, background 0.15s;
+        }
+        .btn-primary:active { transform: scale(0.98); background: var(--primary-dark); }
+        .btn-outline {
+            width: 100%; padding: 13px 24px;
+            font-size: 0.9375rem; font-weight: 600;
+            color: var(--primary);
+            background: transparent;
+            border: 1.5px solid var(--primary);
+            border-radius: var(--radius);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: transform 0.15s, background 0.15s;
+        }
+        .btn-outline:active { transform: scale(0.98); background: var(--primary-light); }
+        .btn-danger-outline {
+            width: 100%; padding: 13px 24px;
+            font-size: 0.9375rem; font-weight: 600;
+            color: var(--danger);
+            background: transparent;
+            border: 1.5px solid var(--danger);
+            border-radius: var(--radius);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: transform 0.15s;
+        }
+        .btn-danger-outline:active { transform: scale(0.98); }
+        .btn-dark {
+            width: 100%; padding: 14px 24px;
+            font-size: 0.9375rem; font-weight: 600;
+            color: white; background: var(--foreground);
+            border: none; border-radius: var(--radius);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: transform 0.15s;
+        }
+        .btn-dark:active { transform: scale(0.98); }
+
+        /* Confirmed badge on join section */
+        .already-confirmed {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px;
+            background: #dcfce7; color: #166534;
+            border-radius: var(--radius);
+            font-size: 0.875rem; font-weight: 600;
+        }
+
+        /* ── Poll / voting ── */
+        .poll-option {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 14px;
+            background: var(--muted);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 0.875rem; font-weight: 500;
+        }
+        .poll-option-label { flex: 1; min-width: 0; margin-right: 12px; }
+        .vote-count {
+            font-size: 0.75rem; color: var(--muted-foreground);
+            margin-right: 10px; white-space: nowrap;
+        }
+        .btn-sm {
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: var(--primary); color: white;
+            font-size: 0.8125rem; font-weight: 600;
+            border: none; white-space: nowrap;
+            transition: transform 0.1s;
+        }
+        .btn-sm:active { transform: scale(0.95); }
+        .btn-sm-outline {
+            padding: 7px 14px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1.5px solid var(--primary); color: var(--primary);
+            font-size: 0.8125rem; font-weight: 600;
+            white-space: nowrap;
+            transition: transform 0.1s;
+        }
+        .btn-sm-outline:active { transform: scale(0.95); }
+
+        .suggest-row {
+            display: flex; gap: 8px; margin-top: 4px;
+        }
+        .suggest-row .form-input {
+            padding: 10px 12px;
+            font-size: 0.875rem;
+            border-radius: 12px;
+        }
+
+        /* ── Chat ── */
+        .chat-box {
+            height: 280px;
+            overflow-y: auto;
+            background: var(--muted);
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex; flex-direction: column; gap: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mensagem {
+            padding: 10px 14px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px; border-bottom-left-radius: 3px;
+            max-width: 85%;
+            font-size: 0.875rem; line-height: 1.5;
+        }
+        .mensagem.minha {
+            background: var(--primary-light);
+            border-color: transparent;
+            margin-left: auto;
+            border-radius: 14px; border-bottom-right-radius: 3px;
+        }
+        .mensagem-autor {
+            font-size: 0.6875rem; font-weight: 700;
+            color: var(--muted-foreground);
+            display: block; margin-bottom: 3px;
+        }
+        .chat-input-row { display: flex; gap: 8px; }
+        .chat-input-row .form-input {
+            padding: 12px 14px;
+            font-size: 0.875rem;
+            border-radius: 12px;
+        }
+        .chat-empty {
+            text-align: center;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            margin: auto;
+        }
+
+        /* ── Rounds ── */
+        .rodada-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .rodada-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px;
+        }
+        .rodada-title { font-size: 0.9375rem; font-weight: 700; }
+        .badge {
+            font-size: 0.6875rem; font-weight: 700;
+            padding: 4px 10px; border-radius: 6px;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .badge-approved { background: var(--success); color: white; }
+        .badge-pending { background: #f59e0b; color: white; }
+        .badge-contested { background: var(--danger); color: white; }
+        .rodada-propostas {
+            list-style: none;
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            display: flex; flex-direction: column; gap: 4px;
+            margin-bottom: 12px;
+        }
+        .rodada-propostas strong { color: var(--foreground); }
+        .validation-row {
+            display: flex; gap: 8px;
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+        }
+        .btn-approve {
+            flex: 1; padding: 10px;
+            border-radius: 8px;
+            background: var(--success); color: white;
+            font-size: 0.875rem; font-weight: 600;
+            border: none; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-reject {
+            flex: 1; padding: 10px;
+            border-radius: 8px;
+            background: var(--danger); color: white;
+            font-size: 0.875rem; font-weight: 600;
+            border: none; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+
+        /* Points input grid */
+        .points-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px;
+        }
+        .points-row span { font-size: 0.875rem; font-weight: 500; }
+        .points-input {
+            width: 80px; padding: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem; font-family: inherit;
+            background: var(--card); color: var(--foreground);
+            outline: none;
+        }
+        .points-input:focus { border-color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <div class="status-bar"></div>
+
+        <header class="top-header">
+            <a href="/evento" class="back-btn" aria-label="Voltar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+            </a>
+            <h1 class="header-title">Detalhes do Evento</h1>
+            <div style="width: 40px;"></div>
+        </header>
+
+        <main class="main-content">
+
+            <!-- ── Event Hero ── -->
+            <div class="detalhe-header">
+                <div class="emoji-grande">{{ evento.emoji }}</div>
+                <h2 class="evento-titulo">{{ evento.titulo }}</h2>
+                {% if evento.descricao %}
+                    <p class="evento-descricao">{{ evento.descricao }}</p>
+                {% endif %}
+                <div class="status-badge status-{{ evento.status }}">{{ evento.get_status_display }}</div>
+
+                {% if evento.data_evento or evento.local %}
+                <div class="evento-meta-row">
+                    {% if evento.data_evento %}
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                            <line x1="16" x2="16" y1="2" y2="6"/>
+                            <line x1="8" x2="8" y1="2" y2="6"/>
+                            <line x1="3" x2="21" y1="10" y2="10"/>
+                        </svg>
+                        {{ evento.data_evento|date:"d/m/Y H:i" }}
+                    </span>
+                    {% endif %}
+                    {% if evento.local %}
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        {{ evento.local }}
+                    </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ── Participants & Join Actions ── -->
+            <div class="section-box">
+                <h3 class="section-box-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Participantes ({{ participantes|length }}{% if evento.min_participantes %} / mín. {{ evento.min_participantes }}{% endif %})
+                </h3>
+
+                <ul class="participant-list">
+                    {% for p in participantes %}
+                    <li class="participant-item">
+                        <div>
+                            <span class="participant-name">{{ p.user.username }}</span>
+                            {% if p.role == 'ORGANIZER' %}
+                                <span class="participant-role">Org.</span>
+                            {% endif %}
+                        </div>
+                        <div class="participant-right">
+                            <div class="participant-status">{{ p.get_status_display }}</div>
+                            <div class="participant-pts">{{ p.pontos_acumulados }} pts</div>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li style="color: var(--muted-foreground); font-size: 0.875rem; padding: 8px 0;">
+                        Nenhum participante ainda.
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <!--
+                    Join logic matrix:
+                    - Organizer             → never show join actions
+                    - Not a participant     → show "Demonstrar Interesse" for PLANNING / WAITING / ONGOING
+                    - INTERESTED participant → show "Confirmar Presença" for WAITING / ONGOING
+                    - CONFIRMED participant  → show confirmed badge
+                    - CLOSED event          → show nothing
+                -->
+                {% if evento.status != 'CLOSED' and request.user != evento.usuario %}
+                <div class="join-section">
+                    {% if not participante_atual %}
+                        {# Brand-new visitor: express interest #}
+                        <form action="{% url 'demonstrar_interesse' evento.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="INTERESTED">
+                            <button type="submit" class="btn-outline">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 5v14"/><path d="M5 12h14"/>
+                                </svg>
+                                Quero Participar
+                            </button>
+                        </form>
+
+                    {% elif participante_atual.status == 'INTERESTED' %}
+                        {# Already interested: nudge to confirm if event is ready #}
+                        {% if evento.status == 'WAITING' or evento.status == 'ONGOING' %}
+                        <form action="{% url 'demonstrar_interesse' evento.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="CONFIRMED">
+                            <button type="submit" class="btn-primary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                Confirmar Presença
+                            </button>
+                        </form>
+                        {% else %}
+                        {# Event still in PLANNING — interest registered, nothing more to do yet #}
+                        <div class="already-confirmed" style="background: #fef9c3; color: #854d0e;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Interesse demonstrado — aguardando definição do evento
+                        </div>
+                        {% endif %}
+
+                    {% elif participante_atual.status == 'CONFIRMED' %}
+                        <div class="already-confirmed">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Presença confirmada
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ── Collective Decision (PLANNING phase) ── -->
+            {% if evento.status == 'PLANNING' %}
+            {% if not evento.data_evento or not evento.local %}
+            <div class="section-box">
+                <h3 class="section-box-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    Decisão Coletiva
+                </h3>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 20px; line-height: 1.6;">
+                    Alguns detalhes ainda não foram definidos. Sugira opções e vote nas melhores.
+                </p>
+
+                {% if not evento.data_evento %}
+                <h4 style="font-size: 0.875rem; font-weight: 700; margin-bottom: 10px;">📅 Data e Hora</h4>
+                <div id="opcoes-data-list">
+                {% for op in opcoes_data %}
+                    <div class="poll-option" data-opcao-id="{{ op.id }}">
+                        <span class="poll-option-label">{{ op.valor }}</span>
+                        <span class="vote-count">{{ op.qtd_votos }} voto{{ op.qtd_votos|pluralize }}</span>
+                        <form action="{% url 'votar_enquete' op.id %}" method="POST" class="votar-form" style="display: contents;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-sm-outline">Votar</button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p class="poll-empty" style="font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 10px;">Nenhuma data sugerida ainda.</p>
+                {% endfor %}
+                </div>
+                <form id="sugerir-data-form" action="{% url 'sugerir_opcao' evento.id %}" method="POST" class="suggest-row" style="margin-bottom: 24px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="DATA">
+                    <input type="datetime-local" name="valor" required class="form-input" style="flex: 1;">
+                    <button type="submit" class="btn-sm">Sugerir</button>
+                </form>
+                {% endif %}
+
+                {% if not evento.local %}
+                <h4 style="font-size: 0.875rem; font-weight: 700; margin-bottom: 10px;">📍 Local</h4>
+                <div id="opcoes-local-list">
+                {% for op in opcoes_local %}
+                    <div class="poll-option" data-opcao-id="{{ op.id }}">
+                        <span class="poll-option-label">{{ op.valor }}</span>
+                        <span class="vote-count">{{ op.qtd_votos }} voto{{ op.qtd_votos|pluralize }}</span>
+                        <form action="{% url 'votar_enquete' op.id %}" method="POST" class="votar-form" style="display: contents;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-sm-outline">Votar</button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p class="poll-empty" style="font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 10px;">Nenhum local sugerido ainda.</p>
+                {% endfor %}
+                </div>
+                <form id="sugerir-local-form" action="{% url 'sugerir_opcao' evento.id %}" method="POST" class="suggest-row">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="LOCAL">
+                    <input type="text" name="valor" placeholder="Ex: Quadra Principal" required class="form-input" style="flex: 1;">
+                    <button type="submit" class="btn-sm">Sugerir</button>
+                </form>
+                {% endif %}
+
+                {% if request.user == evento.usuario %}
+                <form action="{% url 'fechar_planejamento' evento.id %}" method="POST"
+                      style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-dark">
+                        Encerrar Votação e Definir Detalhes
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if request.user == evento.usuario %}
+            <div class="section-box">
+                <h3 class="section-box-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                    </svg>
+                    Excluir Evento
+                </h3>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 16px; line-height: 1.6;">
+                    O evento ainda está em planejamento e pode ser excluído. Essa ação não pode ser desfeita.
+                </p>
+                <form action="{% url 'excluir_evento' evento.id %}" method="POST"
+                      onsubmit="return confirm('Tem certeza que deseja excluir este evento? Essa ação não pode ser desfeita.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger-outline">
+                        Excluir Evento
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <!-- ── Chat (WAITING + ONGOING) ── -->
+            {% if evento.status == 'WAITING' or evento.status == 'ONGOING' %}
+            <div class="section-box">
+                <h3 class="section-box-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat da Turma
+                </h3>
+                <div class="chat-box" id="chat-box">
+                    {% for msg in mensagens %}
+                        <div class="mensagem {% if msg.user == request.user %}minha{% endif %}">
+                            <span class="mensagem-autor">{{ msg.user.username }}</span>
+                            {{ msg.texto }}
+                        </div>
+                    {% empty %}
+                        <p class="chat-empty">Nenhuma mensagem ainda. Quebre o gelo! 👋</p>
+                    {% endfor %}
+                </div>
+                {% if participante_atual %}
+                <form id="chat-form" action="{% url 'enviar_mensagem' evento.id %}" method="POST" class="chat-input-row">
+                    {% csrf_token %}
+                    <input type="text" name="texto" placeholder="Digite uma mensagem..." class="form-input" style="flex: 1;" required>
+                    <button type="submit" class="btn-sm">Enviar</button>
+                </form>
+                {% else %}
+                <p style="font-size: 0.8125rem; color: var(--muted-foreground); text-align: center; margin-top: 4px;">
+                    Entre no evento para enviar mensagens.
+                </p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- ── Rounds & Scoring (ONGOING) ── -->
+            {% if evento.status == 'ONGOING' %}
+            <div class="section-box">
+                <h3 class="section-box-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                    </svg>
+                    Rodadas e Pontuação
+                </h3>
+
+                {% if rodada_atual %}
+                {# Rodada ativa: o que aparece depende do estado dela #}
+                <div style="background: var(--muted); padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                    <p style="font-size: 0.9375rem; font-weight: 700; margin-bottom: 12px;">
+                        Rodada #{{ rodada_atual.numero }}
+                        {% if rodada_atual.status == 'VOTACAO' %}— aguardando votação
+                        {% elif rodada_atual.status == 'CONTESTADA' %}— pontuação contestada
+                        {% else %}em andamento{% endif %}
+                    </p>
+
+                    {% if rodada_atual.status == 'PONTUACAO' %}
+                        {# Estado 1: aguardando a pontuação inicial — só o organizador define #}
+                        {% if request.user == evento.usuario %}
+                        <form action="{% url 'gerenciar_rodada' evento.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="PROPOR_PONTUACAO">
+                            <p style="font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 14px;">
+                                Atribua os pontos conquistados nesta rodada:
+                            </p>
+                            {% for p in participantes %}
+                            <div class="points-row">
+                                <span>{{ p.user.username }}</span>
+                                <input type="number" name="pontos_{{ p.id }}" value="{{ p.pontos_proposta_atual|default:0 }}" min="0" class="points-input">
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn-primary" style="margin-top: 16px;">
+                                Propor Placar
+                            </button>
+                        </form>
+                        {% else %}
+                        <p style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            O organizador está preenchendo o placar desta rodada.
+                        </p>
+                        {% endif %}
+
+                    {% elif rodada_atual.status == 'VOTACAO' %}
+                        {# Estado 2: pontuação proposta, participantes votam #}
+                        <ul class="rodada-propostas" style="margin-bottom: 16px;">
+                            {% for prop in rodada_atual.propostas.all %}
+                            <li><strong>{{ prop.participante.user.username }}</strong> — {{ prop.pontos_ganhos }} pts</li>
+                            {% endfor %}
+                        </ul>
+                        {% if participante_atual %}
+                        <form action="{% url 'votar_placar_rodada' rodada_atual.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="validation-row" style="border-top: none; padding-top: 0;">
+                                <button type="submit" name="concorda" value="sim" class="btn-approve">
+                                    👍 Aprovar
+                                </button>
+                                <button type="submit" name="concorda" value="nao" class="btn-reject">
+                                    👎 Contestar
+                                </button>
+                            </div>
+                        </form>
+                        {% endif %}
+
+                    {% elif rodada_atual.status == 'CONTESTADA' %}
+                        {# Estado 3: maioria contestou — quem contestou define a nova pontuação #}
+                        {% if contestou_rodada_atual %}
+                        <form action="{% url 'gerenciar_rodada' evento.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="PROPOR_PONTUACAO">
+                            <p style="font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 14px;">
+                                Você contestou o placar anterior. Informe a nova pontuação:
+                            </p>
+                            {% for p in participantes %}
+                            <div class="points-row">
+                                <span>{{ p.user.username }}</span>
+                                <input type="number" name="pontos_{{ p.id }}" value="{{ p.pontos_proposta_atual|default:0 }}" min="0" class="points-input">
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn-primary" style="margin-top: 16px;">
+                                Propor Nova Pontuação
+                            </button>
+                        </form>
+                        {% else %}
+                        <p style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            O placar foi contestado. Aguardando quem contestou definir uma nova pontuação.
+                        </p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                {% elif request.user == evento.usuario %}
+                {# No active round: organizer can start one #}
+                <form action="{% url 'gerenciar_rodada' evento.id %}" method="POST" style="margin-bottom: 24px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao" value="INICIAR">
+                    <button type="submit" class="btn-primary">Iniciar Nova Rodada</button>
+                </form>
+                {% endif %}
+
+                {# Round history — somente rodadas já aprovadas/consolidadas #}
+                {% for rodada in historico_rodadas %}
+                <div class="rodada-card">
+                    <div class="rodada-header">
+                        <span class="rodada-title">Rodada #{{ rodada.numero }}</span>
+                        <span class="badge badge-approved">Aprovada</span>
+                    </div>
+                    <ul class="rodada-propostas">
+                        {% for prop in rodada.propostas.all %}
+                        <li><strong>{{ prop.participante.user.username }}</strong> — {{ prop.pontos_ganhos }} pts</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+
+                {% if request.user == evento.usuario %}
+                <form action="{% url 'encerrar_evento' evento.id %}" method="POST" style="margin-top: 16px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger-outline">Encerrar Evento Definitivamente</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- ── Closed event notice ── -->
+            {% if evento.status == 'CLOSED' %}
+            <div class="section-box" style="text-align: center; padding: 32px 20px;">
+                <div style="font-size: 2.5rem; margin-bottom: 12px;">🏁</div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 6px;">Evento encerrado</h3>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground);">
+                    Este evento já foi finalizado. Confira o histórico de rodadas acima.
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="bottom-spacer"></div>
+        </main>
+    </div>
+
+    <script>
+        // Auto-scroll chat to bottom on load
+        const chatBox = document.getElementById('chat-box');
+        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+
+        // ── Envio via AJAX (chat e sugestões) — evita recarregar a página ──
+        const CSRF_TOKEN = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value;
+        const VOTAR_URL_TEMPLATE = "{% url 'votar_enquete' 0 %}";
+
+        async function enviarFormulario(form) {
+            const formData = new FormData(form);
+            const resp = await fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData,
+            });
+            let data = null;
+            try { data = await resp.json(); } catch (e) { /* sem corpo JSON */ }
+            return { ok: resp.ok, data };
+        }
+
+        function montarBotaoVotar(opcaoId) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = VOTAR_URL_TEMPLATE.replace('/0/', '/' + opcaoId + '/');
+            form.className = 'votar-form';
+            form.style.display = 'contents';
+
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = 'csrfmiddlewaretoken';
+            csrf.value = CSRF_TOKEN;
+            form.appendChild(csrf);
+
+            const btn = document.createElement('button');
+            btn.type = 'submit';
+            btn.className = 'btn-sm-outline';
+            btn.textContent = 'Votar';
+            form.appendChild(btn);
+
+            return form;
+        }
+
+        // Chat — enviar mensagem sem recarregar
+        const chatForm = document.getElementById('chat-form');
+        if (chatForm) {
+            chatForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const input = chatForm.querySelector('input[name="texto"]');
+                const texto = input.value.trim();
+                if (!texto) return;
+
+                const botao = chatForm.querySelector('button[type="submit"]');
+                botao.disabled = true;
+
+                try {
+                    const { ok, data } = await enviarFormulario(chatForm);
+                    if (ok && data && data.ok) {
+                        const vazio = chatBox.querySelector('.chat-empty');
+                        if (vazio) vazio.remove();
+
+                        const div = document.createElement('div');
+                        div.className = 'mensagem minha';
+
+                        const autor = document.createElement('span');
+                        autor.className = 'mensagem-autor';
+                        autor.textContent = data.mensagem.autor;
+
+                        div.appendChild(autor);
+                        div.appendChild(document.createTextNode(data.mensagem.texto));
+                        chatBox.appendChild(div);
+                        chatBox.scrollTop = chatBox.scrollHeight;
+
+                        input.value = '';
+                    } else {
+                        alert((data && data.erro) || 'Não foi possível enviar a mensagem.');
+                    }
+                } finally {
+                    botao.disabled = false;
+                }
+            });
+        }
+
+        // Sugestões de data/local — adicionar opção sem recarregar
+        function ligarFormularioSugestao(formId, listId) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const input = form.querySelector('[name="valor"]');
+                if (!input.value) return;
+
+                const botao = form.querySelector('button[type="submit"]');
+                botao.disabled = true;
+
+                try {
+                    const { ok, data } = await enviarFormulario(form);
+                    if (ok && data && data.ok) {
+                        const lista = document.getElementById(listId);
+                        const vazio = lista.querySelector('.poll-empty');
+                        if (vazio) vazio.remove();
+
+                        const item = document.createElement('div');
+                        item.className = 'poll-option';
+                        item.dataset.opcaoId = data.opcao.id;
+
+                        const label = document.createElement('span');
+                        label.className = 'poll-option-label';
+                        label.textContent = data.opcao.valor;
+
+                        const contagem = document.createElement('span');
+                        contagem.className = 'vote-count';
+                        contagem.textContent = data.opcao.qtd_votos + (data.opcao.qtd_votos === 1 ? ' voto' : ' votos');
+
+                        item.appendChild(label);
+                        item.appendChild(contagem);
+                        item.appendChild(montarBotaoVotar(data.opcao.id));
+                        lista.appendChild(item);
+
+                        input.value = '';
+                    } else {
+                        alert((data && data.erro) || 'Não foi possível registrar a sugestão.');
+                    }
+                } finally {
+                    botao.disabled = false;
+                }
+            });
+        }
+
+        ligarFormularioSugestao('sugerir-data-form', 'opcoes-data-list');
+        ligarFormularioSugestao('sugerir-local-form', 'opcoes-local-list');
+
+        // Votar — delegado no documento, cobre tanto as opções já renderizadas
+        // pelo servidor quanto as adicionadas dinamicamente pela sugestão acima.
+        document.addEventListener('submit', async function (e) {
+            const form = e.target;
+            if (!(form instanceof HTMLFormElement) || !form.classList.contains('votar-form')) return;
+            e.preventDefault();
+
+            const botao = form.querySelector('button[type="submit"]');
+            if (botao) botao.disabled = true;
+
+            try {
+                const { ok, data } = await enviarFormulario(form);
+                if (ok && data && data.ok) {
+                    const listId = data.tipo === 'DATA' ? 'opcoes-data-list' : 'opcoes-local-list';
+                    const lista = document.getElementById(listId);
+                    if (lista) {
+                        data.opcoes.forEach(function (o) {
+                            const item = lista.querySelector('[data-opcao-id="' + o.id + '"]');
+                            const contagem = item && item.querySelector('.vote-count');
+                            if (contagem) {
+                                contagem.textContent = o.qtd_votos + (o.qtd_votos === 1 ? ' voto' : ' votos');
+                            }
+                        });
+                    }
+                } else {
+                    alert((data && data.erro) || 'Não foi possível registrar o voto.');
+                }
+            } finally {
+                if (botao) botao.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

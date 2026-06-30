@@ -1,0 +1,70 @@
+.form-container { padding: 20px 16px; }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 8px; color: var(--foreground); }
+.form-label .required { color: var(--danger); }
+.form-input { width: 100%; padding: 14px 16px; font-size: 1rem; font-family: inherit; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); transition: border-color 0.15s ease, box-shadow 0.15s ease; outline: none; }
+.form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(205, 50, 104, 0.15); }
+.form-input::placeholder { color: var(--muted-foreground); }
+textarea.form-input { min-height: 120px; resize: vertical; }
+.form-hint { font-size: 0.75rem; color: var(--muted-foreground); margin-top: 6px; }
+
+/* Emoji Selectors */
+.emoji-selector { display: flex; flex-wrap: wrap; gap: 10px; }
+.emoji-option { width: 52px; height: 52px; border-radius: 14px; border: 2px solid var(--border); background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: all 0.15s ease; }
+.emoji-option:active { transform: scale(0.95); }
+.emoji-option.selected { border-color: var(--primary); background: var(--primary-light); }
+.emoji-option input { position: absolute; opacity: 0; pointer-events: none; }
+
+.datetime-row { display: flex; flex-direction: column; gap: 16px; }
+.datetime-row .form-group { flex: 1; min-width: 0; margin-bottom: 0; }
+
+@media (min-width: 480px) {
+    .datetime-row { flex-direction: row; gap: 12px; }
+}
+
+/* Inputs nativos de data/hora — o navegador desenha um controle interno
+   próprio que não respeita bem padding genérico, então damos espaço extra
+   e fixamos uma altura confortável para não cortar o texto/ícone. */
+input[type="date"].form-input,
+input[type="time"].form-input {
+    min-height: 52px;
+    padding: 12px 14px;
+    color-scheme: light;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* No iOS o texto do date/time picker nativo às vezes nasce alinhado à
+   esquerda colado na borda; isso garante respiro vertical consistente. */
+input[type="date"].form-input::-webkit-date-and-time-value,
+input[type="time"].form-input::-webkit-date-and-time-value {
+    text-align: left;
+}
+
+/* O ícone de calendário/relógio do Chrome/Android fica pequeno e colado
+   à direita por padrão; damos uma área de toque melhor. */
+input[type="date"].form-input::-webkit-calendar-picker-indicator,
+input[type="time"].form-input::-webkit-calendar-picker-indicator {
+    padding: 6px;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.submit-section { padding: 16px; background: var(--card); border-top: 1px solid var(--border); padding-bottom: calc(16px + var(--safe-bottom)); flex-shrink: 0; }
+.submit-btn { width: 100%; padding: 16px 24px; font-size: 1rem; font-weight: 600; color: white; background: var(--primary); border: none; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(205, 50, 104, 0.3); }
+
+.section-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+.section-divider-line { flex: 1; height: 1px; background: var(--border); }
+.section-divider-text { font-size: 0.75rem; font-weight: 600; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Pre-visualizacao */
+.preview-section { margin-top: 8px; padding: 16px; background: var(--muted); border-radius: var(--radius); }
+.preview-label { font-size: 0.75rem; font-weight: 600; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+.preview-card { display: flex; gap: 14px; padding: 14px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); }
+.preview-emoji { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.75rem; background: var(--primary-light); }
+.preview-content { flex: 1; min-width: 0; }
+.preview-title { font-size: 0.9375rem; font-weight: 600; margin-bottom: 4px; color: var(--foreground); }
+.preview-title.placeholder { color: var(--muted-foreground); }
+.preview-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.75rem; color: var(--muted-foreground); }
+.preview-meta-item { display: flex; align-items: center; gap: 4px; }
+.preview-meta-item svg { width: 14px; height: 14px; flex-shrink: 0; }
