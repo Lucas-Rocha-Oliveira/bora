@@ -1,0 +1,35 @@
+/* Brand block */
+.brand-block { padding: 36px 24px 28px; text-align: center; }
+.brand-logo span { font-size: 1.75rem; font-weight: 800; color: white; letter-spacing: -1px; }
+.brand-block h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+.brand-block p { font-size: 0.9375rem; color: var(--muted-foreground); }
+
+/* Form Card */
+.form-card { margin: 0 16px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 8px; }
+.form-label .required { color: var(--danger); }
+.input-wrapper { position: relative; display: flex; align-items: center; }
+.input-icon { position: absolute; left: 14px; color: var(--muted-foreground); pointer-events: none; display: flex; }
+.form-input { width: 100%; padding: 14px 16px 14px 44px; font-size: 1rem; font-family: inherit; border: 1px solid var(--border); border-radius: 12px; background: var(--muted); color: var(--foreground); outline: none; transition: border-color 0.15s, box-shadow 0.15s, background 0.15s; }
+.form-input:focus { border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 3px rgba(205, 50, 104, 0.12); }
+.form-input::placeholder { color: var(--muted-foreground); }
+.form-hint { font-size: 0.75rem; color: var(--muted-foreground); margin-top: 6px; }
+
+/* Alerts & Buttons */
+.error-alert { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--danger-light); border: 1px solid #fca5a5; border-radius: 12px; margin-bottom: 16px; font-size: 0.875rem; color: #b91c1c; font-weight: 500; }
+.error-alert svg { flex-shrink: 0; }
+.submit-btn { width: 100%; padding: 16px 24px; font-size: 1rem; font-weight: 600; color: white; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.15s, background 0.15s; box-shadow: 0 8px 24px rgba(205, 50, 104, 0.3); margin-top: 8px; }
+.submit-btn:active { transform: scale(0.98); background: var(--primary-dark); }
+.footer-link { text-align: center; font-size: 0.875rem; color: var(--muted-foreground); margin: 24px 16px 0; padding-bottom: calc(32px + var(--safe-bottom)); }
+.footer-link a { color: var(--primary); font-weight: 600; }
+
+/* Específicos do Cadastro */
+.password-strength { margin-top: 8px; display: flex; gap: 4px; }
+.strength-bar { flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background 0.3s; }
+.strength-bar.weak { background: var(--danger); }
+.strength-bar.medium { background: #f59e0b; }
+.strength-bar.strong { background: var(--success); }
+.perks { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--muted); border-radius: 12px; margin-bottom: 20px; }
+.perk { display: flex; align-items: center; gap: 10px; font-size: 0.8125rem; color: var(--muted-foreground); }
+.perk-icon { width: 28px; height: 28px; border-radius: 8px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--primary-dark); }

@@ -1,0 +1,135 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+:root {
+    /* Primary — O Preto (#140b15) solicitado como cor principal da marca */
+    --primary: #140b15;       
+    --primary-light: #e5e5e5; /* Cinza claro para botões inativos ou destaques suaves */
+    --primary-dark: #000000;  /* Preto puro para botões quando pressionados */
+
+    /* Neutral System — Padronização de fundos e textos */
+    --background: #f4f4f5;    /* Fundo geral da tela (cinza super claro, neutro) */
+    --foreground: #140b15;    /* O mesmo preto para os textos principais */
+    --muted: #e4e4e7;         /* Fundo para inputs, barras de busca e tags */
+    --muted-foreground: #71717a; /* Textos de apoio e ícones não selecionados */
+    --card: #ffffff;          /* Branco puro para os cards */
+    --border: #d4d4d8;        /* Bordas sutis padronizadas */
+
+    /* Semantic Colors (Mantidas apenas para erros e sucessos) */
+    --secondary: #52525b;
+    --accent: #140b15;
+    --danger: #ef4444;        
+    --danger-light: #fee2e2;
+    --success: #10b981;       
+    
+    /* Global Settings */
+    --radius: 16px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    overflow: hidden;
+    overscroll-behavior: none;
+    line-height: 1.5;
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+
+/* App Shell Base (Padrão para todas as telas) */
+.app-shell { height: 100%; width: 100%; display: flex; flex-direction: column; background: var(--background); }
+.status-bar { height: var(--safe-top); background: var(--card); flex-shrink: 0; }
+.top-header { padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+.header-title { font-size: 1.125rem; font-weight: 700; flex: 1; }
+.header-actions { display: flex; gap: 8px; }
+
+/* Botões Genéricos do Header */
+.back-btn, .icon-btn { 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background: var(--muted); 
+    color: var(--foreground); 
+    flex-shrink: 0; 
+    transition: background 0.15s ease; 
+}
+.back-btn { width: 40px; height: 40px; }
+.icon-btn { width: 44px; height: 44px; }
+.back-btn:active, .icon-btn:active { background: var(--border); transform: scale(0.95); }
+
+/* Logo BORA! — versão header (compacta, para o top-header do index) */
+.header-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    overflow: visible;
+}
+.header-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Logo BORA! — versão brand-block (grande, para login e cadastro) */
+.brand-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+}
+.brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+@media (min-width: 480px) {
+    .brand-logo { width: 88px; height: 88px; }
+}
+
+/* Corpo principal rolavel */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+}
+
+svg {
+    flex-shrink: 0;
+}
+
+.submit-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.preview-meta-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+.back-btn svg {
+    width: 20px;
+    height: 20px;
+}
